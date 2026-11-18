@@ -1,5 +1,5 @@
 PROJECT_NAME = "Small List Utils"
-PROJECT_NUMBER = "1.0.0"
+PROJECT_NUMBER = "1.1.0"
 PROJECT_BRIEF = "An extremely tiny C project for parsing a file with items separated by newlines"
 INPUT = include/slu/
 STRIP_FROM_INC_PATH = include
