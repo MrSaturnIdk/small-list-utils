@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(SmallListUtils
 	VERSION 1.0.0
-	DESCRIPTION "An extremely tiny C99 project for parsing a file with items separated by newlines"
+	DESCRIPTION "An extremely tiny C90 project for parsing a file with items separated by newlines"
 	HOMEPAGE_URL "https://github.com/MrSaturnIdk/small-list-utils"
 	LANGUAGES C
 )
@@ -21,7 +21,7 @@ add_library(slu STATIC
 target_include_directories(slu PUBLIC include)
 target_include_directories(slu PRIVATE src/utils)
 set_target_properties(slu PROPERTIES
-	C_STANDARD 99
+	C_STANDARD 90
 	C_STANDARD_REQUIRED ON
 	C_EXTENSIONS OFF
 )

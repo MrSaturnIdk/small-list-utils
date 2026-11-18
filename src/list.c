@@ -1,4 +1,4 @@
-/// Small helper for handling the list (source)
+/** Small helper for handling the list (source) */
 
 #ifdef _WIN32
 #	define strtok_r strtok_s
@@ -17,46 +17,56 @@
 #include <string.h>
 
 
-enum SluErrors slu_write(const struct SluList* restrict list, FILE* restrict file, const char* restrict delim) {
+enum SluErrors slu_write(const struct SluList* list, FILE* file, const char* delim) {
+	char* catList = NULL;
 	size_t catListSize = 0;
-	for (size_t i = 0; i < list->len; ++i) {
+	size_t i = 0;
+
+	for (i = 0; i < list->len; ++i) {
 		catListSize += (size_t)(strlen(list->list[i]) + 1);
 		catListSize += (size_t)(strlen(delim) + 1);
 	}
-	char* catList = calloc(catListSize, sizeof(char));
+	catList = calloc(catListSize, sizeof(char));
 	if (!catList) {
 		return SLU_ERROR_ALLOC;
 	}
 
-	for (size_t i = 0; i < list->len; ++i) {
+	for (i = 0; i < list->len; ++i) {
 		size_t size = strlen(catList);
 		strncat(catList, list->list[i], catListSize - size - 1);
 		size = strlen(catList);
 		strncat(catList, delim, catListSize - size - 1);
 	}
 
-	size_t size = strlen(catList);
-	size_t written = fwrite(catList, size, 1, file);
-	if (!written) {
+	if (!fwrite(catList, strlen(catList), 1, file)) {
 		free(catList);
 		return SLU_ERROR_RW;
 	}
 	free(catList);
 	return SLU_OK;
 }
-enum SluErrors slu_read(struct SluList* restrict* restrict out, FILE* restrict file, const char* restrict delim) {
-	struct SluList* list = calloc(1, sizeof(struct SluList));
+enum SluErrors slu_read(struct SluList* *out, FILE* file, const char* delim) {
+	struct SluList* list = NULL;
+	char* item = NULL;
 	char* items = NULL;
 	char* itemsCopy = NULL;
+	char *saveptr = NULL;
 	char** arrayList = NULL;
+	size_t fileLength = 0;
+	size_t i = 0;
+	size_t itemAmount = 0;
+	long startPos = 0L;
+	long endPos = 0L;
 	enum SluErrors err = SLU_OK;
+
+	list = calloc(1, sizeof(struct SluList));
 	if (!list) {
 		err = SLU_ERROR_ALLOC;
 		goto cleanup;
 	}
 
-	// Get file length
-	long startPos = ftell(file);
+	/* Get file length */
+	startPos = ftell(file);
 	if (startPos == -1L) {
 		err = SLU_ERROR_META;
 		goto cleanup;
@@ -65,7 +75,7 @@ enum SluErrors slu_read(struct SluList* restrict* restrict out, FILE* restrict f
 		err = SLU_ERROR_META;
 		goto cleanup;
 	}
-	long endPos = ftell(file);
+	endPos = ftell(file);
 	if (endPos == -1L) {
 		err = SLU_ERROR_META;
 		goto cleanup;
@@ -78,9 +88,9 @@ enum SluErrors slu_read(struct SluList* restrict* restrict out, FILE* restrict f
 		err = SLU_ERROR_META;
 		goto cleanup;
 	}
-	size_t fileLength = (size_t)(endPos - startPos);
+	fileLength = (size_t)(endPos - startPos);
 
-	// Read
+	/* Read */
 	items = calloc(fileLength + 1, sizeof(char));
 	if (!items) {
 		err = SLU_ERROR_ALLOC;
@@ -92,34 +102,33 @@ enum SluErrors slu_read(struct SluList* restrict* restrict out, FILE* restrict f
 		goto cleanup;
 	}
 
-	// Get array size
-	size_t i = 0;
+	/* Get array size */
+	i = 0;
 	itemsCopy = strdup(items);
 	if (!itemsCopy) {
-		err = SLU_ERROR_ALLOC; // You can't tell me this isn't allocation
+		err = SLU_ERROR_ALLOC; /* You can't tell me this isn't allocation */
 		goto cleanup;
 	}
-	char *saveptr = NULL;
-	for (char* item = strtok_r(itemsCopy, delim, &saveptr); item; item = strtok_r(NULL, delim, &saveptr)) {
+	for (item = strtok_r(itemsCopy, delim, &saveptr); item; item = strtok_r(NULL, delim, &saveptr)) {
 		++i;
 	}
 	free(itemsCopy);
 	itemsCopy = NULL;
-	size_t itemAmount = i;
+	itemAmount = i;
 
-	// Turn into array
+	/* Turn into array */
 	arrayList = calloc(itemAmount, sizeof(char*));
 	if (!arrayList) {
 		err = SLU_ERROR_ALLOC;
 		goto cleanup;
 	}
-	// For slu_has()
+	/* For slu_has() */
 	for (i = 0; i < itemAmount; ++i) {
 		arrayList[i] = "";
 	}
 
 	i = 0;
-	for (char* item = strtok_r(items, delim, &saveptr); item; item = strtok_r(NULL, delim, &saveptr)) {
+	for (item = strtok_r(items, delim, &saveptr); item; item = strtok_r(NULL, delim, &saveptr)) {
 		arrayList[i++] = item;
 	}
 	list->list = arrayList;
@@ -146,13 +155,13 @@ void slu_close(struct SluList* list) {
 	free(list);
 }
 
-int slu_has(const struct SluList* restrict list, const char* restrict target) {
+int slu_has(const struct SluList* list, const char* target) {
 	if (findIndexOfString((const char* const*)list->list, list->len, target) != -1) {
-		return 1; // Found
+		return 1; /* Found */
 	}
-	return 0; // Not found
+	return 0; /* Not found */
 }
-enum SluErrors slu_add(struct SluList* restrict list, char* restrict item) {
+enum SluErrors slu_add(struct SluList* list, char* item) {
 	char** tempList = NULL;
 	if (list->len + 1 > list->raw_space) {
 		tempList = realloc(list->list, (size_t)(list->len + 1) * sizeof(char*));
@@ -166,9 +175,12 @@ enum SluErrors slu_add(struct SluList* restrict list, char* restrict item) {
 	++list->len;
 	return SLU_OK;
 }
-void slu_remove(struct SluList* restrict list, const char* restrict item) {
-	size_t found = (size_t)findIndexOfString((const char* const*)list->list, list->len, item);
-	for (size_t i = found; i < list->len; ++i) {
+void slu_remove(struct SluList* list, const char* item) {
+	size_t found = 0;
+	size_t i = 0;
+
+	found = (size_t)findIndexOfString((const char* const*)list->list, list->len, item);
+	for (i = found; i < list->len; ++i) {
 		if (list->len != i + 1) {
 			list->list[i] = list->list[i + 1];
 		}

@@ -7,7 +7,7 @@
 /**
  * @mainpage Small List Utils
  *
- * An extremely tiny C99 project for parsing a file with items separated by a delimiter
+ * An extremely tiny C90 project for parsing a file with items separated by a delimiter
  *
  * Meant to be linked by CMake's `FetchContent`, also note the target name is \c slu
  *
@@ -29,22 +29,22 @@
 extern "C" {
 #endif
 
-/// @brief Return code fancy names
+/** @brief Return code fancy names */
 enum SluErrors {
-	SLU_OK = 0, ///< Didn't fail at all
-	SLU_ERROR_RW = -1, ///< Failed to read/write to the file
-	SLU_ERROR_META = -2, ///< Failed to get file metadata, like length
-	SLU_ERROR_ALLOC = -3 ///< Failed to allocate memory
+	SLU_OK = 0, /**< Didn't fail at all */
+	SLU_ERROR_RW = -1, /**< Failed to read/write to the file */
+	SLU_ERROR_META = -2, /**< Failed to get file metadata, like length */
+	SLU_ERROR_ALLOC = -3 /**< Failed to allocate memory */
 };
 /**
  * @brief The list type
  * @note Anything prefixed with \c raw_ is not meant for public use
  */
 struct SluList {
-	char** list; ///< The list (allocated), note every single value is a valid string and some are literals
-	char* raw_file_content; ///< An allocated string which the entire file is loaded into
-	size_t len; ///< The list length
-	size_t raw_space; ///< The amount of space the list actually takes up
+	char** list; /**< The list (allocated), note every single value is a valid string and some are literals */
+	char* raw_file_content; /**< An allocated string which the entire file is loaded into */
+	size_t len; /**< The list length */
+	size_t raw_space; /**< The amount of space the list actually takes up */
 };
 
 /**
@@ -56,7 +56,7 @@ struct SluList {
  * @param delim The thing splitting items
  * @return Either \c SLU_ERROR_RW or \c SLU_OK
  */
-enum SluErrors slu_write(const struct SluList* restrict list, FILE* restrict file, const char* restrict delim);
+enum SluErrors slu_write(const struct SluList* list, FILE* file, const char* delim);
 /**
  * @brief Get a list
  *
@@ -69,7 +69,7 @@ enum SluErrors slu_write(const struct SluList* restrict list, FILE* restrict fil
  * @param delim The thing splitting items
  * @return Either `SLU_OK`, `SLU_ERROR_RW`, `SLU_ERROR_META`, or \c SLU_ERROR_ALLOC
  */
-enum SluErrors slu_read(struct SluList* restrict* restrict out, FILE* restrict file, const char* restrict delim);
+enum SluErrors slu_read(struct SluList* *out, FILE* file, const char* delim);
 /**
  * @brief Frees the heap objects
  *
@@ -82,16 +82,16 @@ void slu_close(struct SluList* list);
  *
  * @return \c 1 if it does include it, \c 0 if otherwise
  */
-int slu_has(const struct SluList* restrict list, const char* restrict target);
+int slu_has(const struct SluList* list, const char* target);
 /**
  * @brief Appends \p item to \p list and increments length
  *
  * @return either \c SLU_OK or `SLU_ERROR_ALLOC`, list remains untouched on fail
  */
-enum SluErrors slu_add(struct SluList* restrict list, char* restrict item);
-/// @brief Removes \p item, sets every item in \p list back 1 (no empty item), and deincrements the legnth
-void slu_remove(struct SluList* restrict list, const char* restrict item);
-/// @brief Sorts \p list using \p sorter (passed to `qsort()`)
+enum SluErrors slu_add(struct SluList* list, char* item);
+/** @brief Removes \p item, sets every item in \p list back 1 (no empty item), and deincrements the length */
+void slu_remove(struct SluList* list, const char* item);
+/** @brief Sorts \p list using \p sorter (passed to `qsort()`) */
 void slu_sort(struct SluList* list, int (*sorter)(const void *, const void *));
 
 #ifdef __cplusplus
