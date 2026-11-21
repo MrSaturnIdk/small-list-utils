@@ -9,7 +9,7 @@
  *
  * An extremely tiny C90 project for parsing a file with items separated by a delimiter
  *
- * Meant to be linked by CMake's `FetchContent`, also note the target name is \c slu
+ * Meant to be linked by CMake's \c FetchContent , also note the target name is \c slu
  *
  * Thread safe, no worries
  *
@@ -67,7 +67,7 @@ enum SluErrors slu_write(const struct SluList* list, FILE* file, const char* del
  * @pre \p file is a valid file
  * @note \p file is not cleared or reverted on error (since if it already failed, it may as well fail again)
  * @param delim The thing splitting items
- * @return Either `SLU_OK`, `SLU_ERROR_RW`, `SLU_ERROR_META`, or \c SLU_ERROR_ALLOC
+ * @return Either \c SLU_OK , \c SLU_ERROR_RW , \c SLU_ERROR_META , or \c SLU_ERROR_ALLOC
  */
 enum SluErrors slu_read(struct SluList* *out, FILE* file, const char* delim);
 /**
@@ -86,12 +86,12 @@ int slu_has(const struct SluList* list, const char* target);
 /**
  * @brief Appends \p item to \p list and increments length
  *
- * @return either \c SLU_OK or `SLU_ERROR_ALLOC`, list remains untouched on fail
+ * @return either \c SLU_OK or \c SLU_ERROR_ALLOC , list remains untouched on fail
  */
 enum SluErrors slu_add(struct SluList* list, const char* item);
 /** @brief Removes \p item, sets every item in \p list back 1 (no empty item), and deincrements the length */
 void slu_remove(struct SluList* list, const char* item);
-/** @brief Sorts \p list using \p sorter (passed to `qsort()`) */
+/** @brief Sorts \p list using \p sorter (passed to \c qsort() ) */
 void slu_sort(struct SluList* list, int (*sorter)(const void *, const void *));
 
 #ifdef __cplusplus
