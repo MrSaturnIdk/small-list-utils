@@ -23,19 +23,18 @@ enum SluErrors slu_write(const struct SluList* list, FILE* file, const char* del
 	size_t i = 0;
 
 	for (i = 0; i < list->len; ++i) {
-		catListSize += (size_t)(strlen(list->list[i]) + 1);
-		catListSize += (size_t)(strlen(delim) + 1);
+		catListSize += strlen(list->list[i]);
+		catListSize += strlen(delim);
 	}
+	catListSize += 1;
 	catList = calloc(catListSize, sizeof(char));
 	if (!catList) {
 		return SLU_ERROR_ALLOC;
 	}
 
 	for (i = 0; i < list->len; ++i) {
-		size_t size = strlen(catList);
-		strncat(catList, list->list[i], catListSize - size - 1);
-		size = strlen(catList);
-		strncat(catList, delim, catListSize - size - 1);
+		strcat(catList, list->list[i]);
+		strcat(catList, delim);
 	}
 
 	if (!fwrite(catList, strlen(catList), 1, file)) {
