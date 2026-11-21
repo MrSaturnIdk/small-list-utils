@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <string.h>
 
-static int findIndexOfString(const char* const array[], size_t len, const char* item) {
+static int findIndexOfString(const char* array[], size_t len, const char* item) {
 	size_t i = 0;
 
 	for (i = 0; i < len; ++i) {

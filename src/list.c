@@ -156,12 +156,12 @@ void slu_close(struct SluList* list) {
 }
 
 int slu_has(const struct SluList* list, const char* target) {
-	if (findIndexOfString((const char* const*)list->list, list->len, target) != -1) {
+	if (findIndexOfString((const char**)list->list, list->len, target) != -1) {
 		return 1; /* Found */
 	}
 	return 0; /* Not found */
 }
-enum SluErrors slu_add(struct SluList* list, char* item) {
+enum SluErrors slu_add(struct SluList* list, const char* item) {
 	char** tempList = NULL;
 	if (list->len + 1 > list->raw_space) {
 		tempList = realloc(list->list, (size_t)(list->len + 1) * sizeof(char*));
@@ -171,7 +171,7 @@ enum SluErrors slu_add(struct SluList* list, char* item) {
 		list->list = tempList;
 		++list->raw_space;
 	}
-	list->list[list->len] = item;
+	list->list[list->len] = (char*)item;
 	++list->len;
 	return SLU_OK;
 }
@@ -179,7 +179,7 @@ void slu_remove(struct SluList* list, const char* item) {
 	size_t found = 0;
 	size_t i = 0;
 
-	found = (size_t)findIndexOfString((const char* const*)list->list, list->len, item);
+	found = (size_t)findIndexOfString((const char**)list->list, list->len, item);
 	for (i = found; i < list->len; ++i) {
 		if (list->len != i + 1) {
 			list->list[i] = list->list[i + 1];

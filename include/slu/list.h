@@ -88,7 +88,7 @@ int slu_has(const struct SluList* list, const char* target);
  *
  * @return either \c SLU_OK or `SLU_ERROR_ALLOC`, list remains untouched on fail
  */
-enum SluErrors slu_add(struct SluList* list, char* item);
+enum SluErrors slu_add(struct SluList* list, const char* item);
 /** @brief Removes \p item, sets every item in \p list back 1 (no empty item), and deincrements the length */
 void slu_remove(struct SluList* list, const char* item);
 /** @brief Sorts \p list using \p sorter (passed to `qsort()`) */
